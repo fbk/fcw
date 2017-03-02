@@ -9,51 +9,37 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fcw-udpipe-api</artifactId>
+    <artifactId>fcw-geoloc</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
+            <version>${corenlp-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.fbk.utils</groupId>
+            <artifactId>utils-gson</artifactId>
+            <version>${utils.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-core</artifactId>
             <version>${utils.version}</version>
         </dependency>
-        <dependency>
-            <groupId>eu.fbk.fcw</groupId>
-            <artifactId>fcw-utils</artifactId>
-            <version>${fcw.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.fbk.dh</groupId>
-            <artifactId>tint-tokenizer</artifactId>
-            <version>${tint.version}</version>
-            <scope>runtime</scope>
-        </dependency>
 
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>eu.fbk.utils</groupId>
-            <artifactId>utils-gson</artifactId>
-            <version>${utils.version}</version>
-        </dependency>
     </dependencies>
+
     <properties>
         <parent-path>..</parent-path>
     </properties>

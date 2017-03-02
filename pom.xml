@@ -31,6 +31,8 @@
         <module>fcw-utils</module>
         <module>fcw-linking</module>
         <module>fcw-depparse</module>
+        <module>fcw-geoloc</module>
+        <module>fcw-languagetool-api</module>
     </modules>
 
     <properties>

@@ -1,12 +1,12 @@
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import eu.fbk.dh.tint.runner.outputters.JSONOutputter;
 import eu.fbk.fcw.udpipe.api.UDPipeAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Properties;
+
+//import eu.fbk.dh.tint.runner.outputters.JSONOutputter;
 
 /**
  * Created by alessio on 15/02/17.
@@ -34,10 +34,10 @@ public class UDPipeTest {
                 + "\n");
         pipeline.annotate(annotation);
         System.out.println(annotation.get(UDPipeAnnotations.UDPipeOriginalAnnotation.class));
-        try {
-            System.out.println(JSONOutputter.jsonPrint(annotation));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.out.println(JSONOutputter.jsonPrint(annotation));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
