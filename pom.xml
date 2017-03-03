@@ -33,6 +33,13 @@
         <module>fcw-depparse</module>
         <module>fcw-geoloc</module>
         <module>fcw-languagetool-api</module>
+        <module>fcw-ukb</module>
+        <module>fcw-wnpos</module>
+        <module>fcw-mate</module>
+        <module>fcw-semafor</module>
+        <module>fcw-treetagger</module>
+        <module>fcw-ner</module>
+        <module>fcw-mst-api</module>
     </modules>
 
     <properties>
