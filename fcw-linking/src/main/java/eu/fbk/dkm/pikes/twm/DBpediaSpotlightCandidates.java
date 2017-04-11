@@ -1,5 +1,6 @@
 package eu.fbk.dkm.pikes.twm;
 
+import eu.fbk.utils.core.PropertiesUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -21,11 +22,14 @@ public class DBpediaSpotlightCandidates extends Linking {
     public static final double DBPSC_MIN_CONFIDENCE = 0.01;
     public static final double DBPSC_FIRST_CONFIDENCE = 0.5;
 
+    private static Boolean retainAllProperties;
+
     public DBpediaSpotlightCandidates(Properties properties) {
         super(properties, properties.getProperty("address", DBpediaSpotlightAnnotate.DBPS_ADDRESS) + "/candidates");
         firstAttemptConfidence = properties
                 .getProperty("first_confidence", Double.toString(DBPSC_FIRST_CONFIDENCE));
         confidence = properties.getProperty("min_confidence", Double.toString(DBPSC_MIN_CONFIDENCE));
+        retainAllProperties = PropertiesUtils.getBoolean(properties.getProperty("retainAllProperties"), false);
     }
 
     private List<LinkingTag> attempt(Map<String, String> pars) throws IOException {
@@ -112,6 +116,9 @@ public class DBpediaSpotlightCandidates extends Linking {
                 originalText.length(),
                 LABEL
         );
+        if (retainAllProperties) {
+            tag.setContextualScore(Double.parseDouble((String) resource.get("@contextualScore")));
+        }
         if (extractTypes) {
             tag.addTypesFromDBpedia((String) resource.get("@types"));
         }
