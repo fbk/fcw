@@ -1,6 +1,5 @@
 package eu.fbk.dkm.pikes.twm;
 
-import eu.fbk.utils.core.PropertiesUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
@@ -22,14 +21,15 @@ public class DBpediaSpotlightCandidates extends Linking {
     public static final double DBPSC_MIN_CONFIDENCE = 0.01;
     public static final double DBPSC_FIRST_CONFIDENCE = 0.5;
 
-    private static Boolean retainAllProperties;
+    private static String confidencePropertyName;
+    private static String CPN_DEFAULT = "@finalScore";
 
     public DBpediaSpotlightCandidates(Properties properties) {
         super(properties, properties.getProperty("address", DBpediaSpotlightAnnotate.DBPS_ADDRESS) + "/candidates");
         firstAttemptConfidence = properties
                 .getProperty("first_confidence", Double.toString(DBPSC_FIRST_CONFIDENCE));
         confidence = properties.getProperty("min_confidence", Double.toString(DBPSC_MIN_CONFIDENCE));
-        retainAllProperties = PropertiesUtils.getBoolean(properties.getProperty("retainAllProperties"), false);
+        confidencePropertyName = properties.getProperty("confidencePropertyName", CPN_DEFAULT);
     }
 
     private List<LinkingTag> attempt(Map<String, String> pars) throws IOException {
@@ -108,17 +108,18 @@ public class DBpediaSpotlightCandidates extends Linking {
 
     private LinkingTag tagFromResource(LinkedHashMap resource, LinkedHashMap keyword) {
         String originalText = (String) keyword.get("@name");
+        String resourceValue = (String) resource.get(confidencePropertyName);
+        if (resourceValue == null) {
+            resourceValue = (String) resource.get(CPN_DEFAULT);
+        }
         LinkingTag tag = new LinkingTag(
                 Integer.parseInt((String) keyword.get("@offset")),
                 String.format("http://dbpedia.org/resource/%s", (String) resource.get("@uri")),
-                Double.parseDouble((String) resource.get("@finalScore")),
+                Double.parseDouble(resourceValue),
                 originalText,
                 originalText.length(),
                 LABEL
         );
-        if (retainAllProperties) {
-            tag.setContextualScore(Double.parseDouble((String) resource.get("@contextualScore")));
-        }
         if (extractTypes) {
             tag.addTypesFromDBpedia((String) resource.get("@types"));
         }

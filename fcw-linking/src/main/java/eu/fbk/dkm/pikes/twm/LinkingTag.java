@@ -21,7 +21,6 @@ public class LinkingTag implements Serializable {
     private int offset;
     private String page;
     private double score;
-    private Double contextualScore = null;
     private String originalText;
     private int length;
     private String source;
@@ -29,14 +28,6 @@ public class LinkingTag implements Serializable {
     private String image;
 
     private HashMap<Category, HashSet<String>> types = new HashMap<>();
-
-    public Double getContextualScore() {
-        return contextualScore;
-    }
-
-    public void setContextualScore(Double contextualScore) {
-        this.contextualScore = contextualScore;
-    }
 
     public LinkingTag(int offset, String page, double score, String originalText, int length, String source) {
         this.offset = offset;
