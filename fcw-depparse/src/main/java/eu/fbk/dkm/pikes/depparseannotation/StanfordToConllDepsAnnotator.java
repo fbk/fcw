@@ -25,7 +25,7 @@ public class StanfordToConllDepsAnnotator implements Annotator {
     @Override
     public void annotate(Annotation annotation) {
         if (annotation.containsKey(CoreAnnotations.SentencesAnnotation.class)) {
-            int sentOffset = 0;
+//            int sentOffset = 0;
             for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
                 SemanticGraph dependencies = sentence.get(
                         SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
@@ -34,10 +34,12 @@ public class StanfordToConllDepsAnnotator implements Annotator {
                 if (dependencies != null) {
                     for (int i = 0; i < tokens.size(); i++) {
                         CoreLabel token = tokens.get(i);
-                        int j = i + sentOffset;
+//                        int j = i + sentOffset;
+                        int j = i;
 
                         String label = info.getDepLabels().get(j + 1);
-                        int head = info.getDepParents().get(j + 1) - 1 - sentOffset;
+//                        int head = info.getDepParents().get(j + 1) - 1 - sentOffset;
+                        int head = info.getDepParents().get(j + 1) - 1;
                         if (head < -1) {
                             head = -1;
                         }
@@ -45,7 +47,7 @@ public class StanfordToConllDepsAnnotator implements Annotator {
                         token.set(CoreAnnotations.CoNLLDepParentIndexAnnotation.class, head);
                     }
                 }
-                sentOffset += tokens.size();
+//                sentOffset += tokens.size();
             }
         } else {
             throw new RuntimeException("unable to find words/tokens in: " + annotation);
