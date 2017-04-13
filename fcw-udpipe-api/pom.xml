@@ -30,12 +30,12 @@
             <artifactId>fcw-utils</artifactId>
             <version>${fcw.version}</version>
         </dependency>
-        <dependency>
-            <groupId>eu.fbk.dh</groupId>
-            <artifactId>tint-tokenizer</artifactId>
-            <version>${tint.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>eu.fbk.dh</groupId>-->
+            <!--<artifactId>tint-tokenizer</artifactId>-->
+            <!--<version>${tint.version}</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>commons-logging</groupId>
