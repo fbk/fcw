@@ -1,8 +1,7 @@
 package eu.fbk.fcw.semafor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +121,6 @@ public class Semafor {
         }
     }
 
-    @JsonIgnoreProperties({ "tokens" })
     public static class SemaforResponse {
         List<SemaforFrame> frames;
 
