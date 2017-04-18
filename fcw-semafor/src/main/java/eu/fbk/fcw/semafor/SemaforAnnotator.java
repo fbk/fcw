@@ -13,6 +13,8 @@ import edu.stanford.nlp.util.CoreMap;
 import eu.fbk.dkm.pikes.depparseannotation.DepParseInfo;
 import eu.fbk.dkm.pikes.depparseannotation.DepparseAnnotations;
 import eu.fbk.utils.core.PropertiesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
@@ -22,6 +24,8 @@ import java.util.*;
  */
 
 public class SemaforAnnotator implements Annotator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SemaforAnnotator.class);
 
     private Semafor parser;
     int maxLen;
@@ -51,6 +55,7 @@ public class SemaforAnnotator implements Annotator {
 
                 DepParseInfo depParseInfo = stanfordSentence.get(DepparseAnnotations.MstParserAnnotation.class);
                 if (depParseInfo == null) {
+                    LOGGER.warn("depParseInfo is null");
                     continue;
                 }
 
