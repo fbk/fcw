@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by alessio on 07/02/17.
@@ -14,12 +16,15 @@ import java.util.Map;
 
 public class ConllToken {
 
+    final static private Pattern p = Pattern.compile("[0-9]+");
+
     String id;
     String form;
     String lemma = null;
     String upos = null;
     String xpos = null;
     HashMultimap<String, String> feats = null;
+    String[] originalParts;
 
     Integer head = null;
     String deprel = null;
@@ -29,14 +34,37 @@ public class ConllToken {
     String originalString = null;
 
     public ConllToken(String conllLine) throws Exception {
+        this(conllLine, 0);
+    }
+
+    public String[] getOriginalParts() {
+        return originalParts;
+    }
+
+    public ConllToken(String conllLine, int offset) throws Exception {
         conllLine = conllLine.trim();
         originalString = conllLine;
         String[] parts = conllLine.split("\t");
+
+        originalParts = new String[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            originalParts[i] = parts[i];
+        }
+
         if (parts.length < 10) {
             throw new Exception("Input line in wrong format: " + conllLine);
         }
 
-        setId(parts[0]);
+        Matcher m = p.matcher(parts[0]);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            Integer n = Integer.parseInt(m.group());
+            n += offset;
+            m.appendReplacement(sb, n.toString());
+        }
+        m.appendTail(sb);
+
+        setId(sb.toString());
         setForm(parts[1]);
 
         if (!parts[2].equals("_")) {
@@ -66,7 +94,11 @@ public class ConllToken {
         }
 
         if (!parts[6].equals("_")) {
-            setHead(Integer.parseInt(parts[6]));
+            int head = Integer.parseInt(parts[6]);
+            if (head != 0) {
+                head += offset;
+            }
+            setHead(head);
         }
         if (!parts[7].equals("_")) {
             setDeprel(parts[7]);
@@ -78,7 +110,11 @@ public class ConllToken {
             for (String dep : deps) {
                 String[] depParts = dep.split(":");
                 if (depParts.length >= 2) {
-                    Pair<Integer, String> thisDep = new Pair(Integer.parseInt(depParts[0]), depParts[1]);
+                    int head = Integer.parseInt(depParts[0]);
+                    if (head != 0) {
+                        head += offset;
+                    }
+                    Pair<Integer, String> thisDep = new Pair(head, depParts[1]);
                     depList.add(thisDep);
                 }
             }
@@ -146,7 +182,7 @@ public class ConllToken {
     }
 
     public Map<String, Collection<String>> getFeats() {
-        return feats.asMap();
+        return feats != null ? feats.asMap() : null;
     }
 
     public void setFeats(HashMultimap<String, String> feats) {
