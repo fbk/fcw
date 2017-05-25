@@ -8,12 +8,12 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.Annotator;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
-import edu.stanford.nlp.trees.ud.CoNLLUDocumentReader;
 import edu.stanford.nlp.util.ArraySet;
 import edu.stanford.nlp.util.CoreMap;
 import eu.fbk.fcw.utils.ConllToken;
 import eu.fbk.fcw.utils.Network;
 import eu.fbk.utils.core.PropertiesUtils;
+import eu.fbk.utils.corenlp.CustomAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +86,7 @@ public class UDPipeAnnotator implements Annotator {
             if (keepOriginal) {
                 annotation.set(UDPipeAnnotations.UDPipeOriginalAnnotation.class, result);
             }
+
             List<List<ConllToken>> text = new ArrayList<>();
             List<ConllToken> thisSentence = new ArrayList<>();
 
@@ -93,18 +94,21 @@ public class UDPipeAnnotator implements Annotator {
 
             reader = new BufferedReader(new StringReader(result));
             String line;
+            int sentenceOffset = 0;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.length() == 0) {
                     if (thisSentence.size() > 0) {
                         text.add(thisSentence);
+                        sentenceOffset += thisSentence.size();
                         thisSentence = new ArrayList<>();
                     }
                     continue;
                 }
 
                 try {
-                    ConllToken token = new ConllToken(line);
+                    ConllToken token = new ConllToken(line, sentenceOffset);
+//                    System.out.println("Adding token " + token.toString() + " with offset " + sentenceOffset);
                     thisSentence.add(token);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -115,20 +119,52 @@ public class UDPipeAnnotator implements Annotator {
             }
             reader.close();
 
+            StringBuffer res;
+
+            res = new StringBuffer();
+            res.append(result);
+
+            res = new StringBuffer();
+            for (List<ConllToken> sentence : text) {
+                for (ConllToken token : sentence) {
+                    res.append(token.getId()).append("\t");
+                    res.append(token.getOriginalParts()[1]).append("\t");
+                    res.append(token.getOriginalParts()[2]).append("\t");
+                    res.append(token.getOriginalParts()[3]).append("\t");
+                    res.append(token.getOriginalParts()[4]).append("\t");
+                    res.append(token.getOriginalParts()[5]).append("\t");
+                    res.append(nn(token.getHead().toString())).append("\t");
+                    res.append(token.getOriginalParts()[7]).append("\t");
+                    res.append("_").append("\t");
+                    res.append(token.getOriginalParts()[9]).append("\n");
+                }
+
+                res.append("\n");
+            }
+
+//            System.out.println(res.toString());
+
             List<SemanticGraph> graphs = new ArrayList<>();
-            reader = new BufferedReader(new StringReader(result));
+            reader = new BufferedReader(new StringReader(res.toString()));
             CoNLLUDocumentReader depReader = new CoNLLUDocumentReader();
             Iterator<SemanticGraph> it = depReader.getIterator(reader);
-            graphs = new ArrayList<>();
             it.forEachRemaining(graphs::add);
             reader.close();
 
             List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
+//            int sentenceIndex = 0;
             for (int i = 0; i < sentences.size(); i++) {
                 CoreMap sentence = sentences.get(i);
 
                 try {
                     SemanticGraph semanticGraph = graphs.get(i);
+//                    for (int j = 0; j < semanticGraph.size(); j++) {
+//                        IndexedWord node = semanticGraph.getNodeByIndex(j);
+//                        node.setIndex(node.index() + sentenceIndex);
+//                    }
+//                    for (IndexedWord indexedWord : semanticGraph.getRoots()) {
+//                        System.out.println(indexedWord.index());
+//                    }
                     sentence.set(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class, semanticGraph);
                 } catch (Exception e) {
                     LOGGER.warn(e.getMessage());
@@ -137,22 +173,25 @@ public class UDPipeAnnotator implements Annotator {
                 List<CoreLabel> get1 = sentence.get(CoreAnnotations.TokensAnnotation.class);
                 for (int j = 0; j < get1.size(); j++) {
                     CoreLabel token = get1.get(j);
-                    try {
-                        ConllToken conllToken = text.get(i).get(j);
+                    ConllToken conllToken = text.get(i).get(j);
+//                    System.out.println(conllToken.getFeats());
+//                    System.out.println(token);
 
-                        token.set(CoreAnnotations.PartOfSpeechAnnotation.class, conllToken.getXpos());
-                        token.set(CoreAnnotations.LemmaAnnotation.class, conllToken.getLemma());
-                        token.set(UDPipeAnnotations.UPosAnnotation.class, conllToken.getUpos());
-                        token.set(UDPipeAnnotations.FeaturesAnnotation.class, conllToken.getFeats());
-                        token.set(UDPipeAnnotations.DepsAnnotation.class, conllToken.getDeps());
-                        token.set(UDPipeAnnotations.LemmaAnnotation.class, conllToken.getLemma());
-                        token.set(UDPipeAnnotations.MiscAnnotation.class, conllToken.getMisc());
-
-                    } catch (Exception e) {
-                        LOGGER.warn(e.getMessage());
-                    }
+                    token.set(CoreAnnotations.PartOfSpeechAnnotation.class, conllToken.getXpos());
+                    token.set(CoreAnnotations.LemmaAnnotation.class, conllToken.getLemma());
+                    token.set(CustomAnnotations.UPosAnnotation.class, conllToken.getUpos());
+                    token.set(CustomAnnotations.FeaturesAnnotation.class, conllToken.getFeats());
+                    token.set(CustomAnnotations.DepsAnnotation.class, conllToken.getDeps());
+                    token.set(UDPipeAnnotations.LemmaAnnotation.class, conllToken.getLemma());
+                    token.set(CustomAnnotations.MiscAnnotation.class, conllToken.getMisc());
                 }
 
+//                for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
+//                    System.out.println(token.get(UDPipeAnnotations.FeaturesAnnotation.class));
+//                }
+//                System.out.println();
+
+//                sentenceIndex += sentence.size();
             }
 
 //            for (List<ConllToken> sentence : text) {
@@ -165,6 +204,10 @@ public class UDPipeAnnotator implements Annotator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String nn(String value) {
+        return value == null ? "_" : value;
     }
 
     @Override public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
@@ -182,12 +225,12 @@ public class UDPipeAnnotator implements Annotator {
                 CoreAnnotations.OriginalTextAnnotation.class,
                 CoreAnnotations.ValueAnnotation.class,
                 CoreAnnotations.PartOfSpeechAnnotation.class,
-                UDPipeAnnotations.UPosAnnotation.class,
-                UDPipeAnnotations.FeaturesAnnotation.class,
-                UDPipeAnnotations.DepsAnnotation.class,
+                CustomAnnotations.UPosAnnotation.class,
+                CustomAnnotations.FeaturesAnnotation.class,
+                CustomAnnotations.DepsAnnotation.class,
                 UDPipeAnnotations.LemmaAnnotation.class,
                 CoreAnnotations.LemmaAnnotation.class,
-                UDPipeAnnotations.MiscAnnotation.class,
+                CustomAnnotations.MiscAnnotation.class,
                 SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
         ));
     }

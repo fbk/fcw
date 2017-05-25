@@ -1,6 +1,9 @@
+import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import eu.fbk.fcw.udpipe.api.UDPipeAnnotations;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
+import edu.stanford.nlp.util.CoreMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +33,16 @@ public class UDPipeTest {
 //        properties.setProperty("udpipe.model", "/Users/alessio/Desktop/model");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(properties);
 
-        Annotation annotation = new Annotation("Mi trovo nella casa dove sono nato.\n"
-                + "\n");
+        Annotation annotation = new Annotation("Mi trovo nella casa dove sono nato. O forse non sono mai nato.");
         pipeline.annotate(annotation);
-        System.out.println(annotation.get(UDPipeAnnotations.UDPipeOriginalAnnotation.class));
+        for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
+            SemanticGraph graph = sentence.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
+            System.out.println(graph);
+            System.out.println(graph.getFirstRoot().index());
+            System.out.println();
+        }
+
+//        System.out.println(annotation.get(UDPipeAnnotations.UDPipeOriginalAnnotation.class));
 //        try {
 //            System.out.println(JSONOutputter.jsonPrint(annotation));
 //        } catch (IOException e) {

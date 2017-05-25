@@ -53,6 +53,11 @@
             <artifactId>utils-gson</artifactId>
             <version>${utils.version}</version>
         </dependency>
+        <dependency>
+            <groupId>eu.fbk.utils</groupId>
+            <artifactId>utils-corenlp</artifactId>
+            <version>${utils.version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <parent-path>..</parent-path>
