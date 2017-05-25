@@ -23,10 +23,12 @@ public class MachineLinking extends Linking {
 
     private static String LABEL = "ml-annotate";
     private Double minWeight;
+    private String lang;
 
     public MachineLinking(Properties properties) {
         super(properties, properties.getProperty("address"));
         minWeight = PropertiesUtils.getDouble(properties.getProperty("min_confidence"), ML_CONFIDENCE);
+        lang = properties.getProperty("lang", null);
     }
 
     public String lang(String text) throws IOException {
@@ -75,6 +77,9 @@ public class MachineLinking extends Linking {
         pars.put("app_id", "0");
         pars.put("app_key", "0");
         pars.put("text", text);
+        if (lang != null) {
+            pars.put("lang", lang);
+        }
 
         LOGGER.debug("Text length: {}", text.length());
         LOGGER.debug("Pars: {}", pars);

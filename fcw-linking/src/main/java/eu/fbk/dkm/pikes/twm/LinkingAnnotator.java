@@ -35,6 +35,9 @@ public class LinkingAnnotator implements Annotator {
 
         String annotator = newProps.getProperty("annotator", DBPS_ANNOTATOR);
         Class<? extends Linking> myClass = annotators.get(annotator);
+        if (myClass == null) {
+            myClass = (Class<? extends Linking>) Class.forName(annotator);
+        }
         Constructor<? extends Linking> myConstructor = myClass.getConstructor(Properties.class);
         tagger = myConstructor.newInstance(newProps);
     }
