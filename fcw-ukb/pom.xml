@@ -33,6 +33,11 @@
             <version>${fcw.version}</version>
         </dependency>
         <dependency>
+            <groupId>eu.fbk.fcw</groupId>
+            <artifactId>fcw-wnpos</artifactId>
+            <version>${fcw.version}</version>
+        </dependency>
+        <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-core</artifactId>
             <version>${utils.version}</version>
