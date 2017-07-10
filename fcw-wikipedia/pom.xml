@@ -17,6 +17,12 @@
             <artifactId>stanford-corenlp</artifactId>
         </dependency>
         <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <classifier>models</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-core</artifactId>
             <version>3.1-SNAPSHOT</version>
