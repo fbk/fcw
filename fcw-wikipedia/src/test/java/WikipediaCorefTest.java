@@ -29,7 +29,7 @@ public class WikipediaCorefTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikipediaCorefTest.class);
     private static final String prefix = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=&exlimit=1&titles=";
-    private static final String page = "Alcide De Gasperi";
+    private static final String page = "Steve Jobs";
 
     public static String downloadPage(String sURL) {
         String s = new String();
@@ -44,7 +44,7 @@ public class WikipediaCorefTest {
             con.setRequestProperty("User-Agent", "Mozilla/5.0");
 
             int responseCode = con.getResponseCode();
-            System.out.println("\nSending 'GET' request for URL: " + sURL);
+            LOGGER.info("\nSending 'GET' request for URL: " + sURL);
 //            System.out.println("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(
@@ -85,21 +85,21 @@ public class WikipediaCorefTest {
         }
         text = o.getAsJsonObject("query").getAsJsonObject("pages").getAsJsonObject(id_page).get("extract").getAsString();
 
+//        System.out.println(text);
+
         Properties props;
         Annotation annotation;
 
         props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, wikipediacoref");
         props.setProperty("customAnnotatorClass.wikipediacoref", "eu.fbk.fcw.wikipedia.WikipediaCorefAnnotator");
+//        props.setProperty("wikipediacoref.wordList", "the, apple");
+//        props.setProperty("wikipediacoref.includePersons", "0");
 
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         annotation = new Annotation(text);
         annotation.set(CoreAnnotations.DocTitleAnnotation.class, page);
         pipeline.annotate(annotation);
-
-//        for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
-//            System.out.println(sentence);
-//        }
 
         List<CoreMap> sentences = annotation.get(CoreAnnotations.SentencesAnnotation.class);
         HashMultimap<Integer, Integer> simpleCoref = annotation.get(CustomAnnotations.SimpleCorefAnnotation.class);
@@ -109,27 +109,6 @@ public class WikipediaCorefTest {
                 System.out.println(sentences.get(sentence).get(CoreAnnotations.TokensAnnotation.class).get(token - 1));
             }
         }
-
-//        System.out.println(annotation.get(CoreAnnotations.TextAnnotation.class));
-
-//        Map<Integer, CorefChain> coreferenceGraph = annotation.get(CorefCoreAnnotations.CorefChainAnnotation.class);
-//        for (Object c : coreferenceGraph.keySet()) {
-//            CorefChain chain = coreferenceGraph.get(c);
-//            Map<IntPair, Set<CorefChain.CorefMention>> mentionMap = chain.getMentionMap();
-//
-//            System.out.println(mentionMap);
-//            for (IntPair p : mentionMap.keySet()) {
-//                for (CorefChain.CorefMention m : mentionMap.get(p)) {
-//                    System.out.println(m.sentNum);
-//                    System.out.println(m.startIndex);
-//                    System.out.println(m.endIndex);
-//                }
-//            }
-//        }
-
-//        if (text.length() < 1000) {
-//            printOutput(annotation);
-//        }
 
     }
 }
