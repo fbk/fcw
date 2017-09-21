@@ -137,6 +137,7 @@ public class NERCustomAnnotator extends SentenceAnnotator {
                 String normNeTag = output.get(i).get(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class);
                 tokens.get(i).setNER(neTag);
                 if (normNeTag != null) tokens.get(i).set(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class, normNeTag);
+                //next: Transfer from src to dst all annotations generated bu SUTime and NumberNormalizer
                 NumberSequenceClassifier.transferAnnotations(output.get(i), tokens.get(i));
             }
 
