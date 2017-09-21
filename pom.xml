@@ -41,6 +41,7 @@
         <module>fcw-ner</module>
         <module>fcw-mst-api</module>
         <module>fcw-wikipedia</module>
+        <module>fcw-pos</module>
     </modules>
 
     <properties>

@@ -21,19 +21,19 @@ public class UDPipeTest {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
-        properties.setProperty("annotators", "ita_toksent, udpipe");
+        properties.setProperty("annotators", "udpipe");
         properties.setProperty("customAnnotatorClass.udpipe", "eu.fbk.fcw.udpipe.api.UDPipeAnnotator");
-        properties.setProperty("customAnnotatorClass.ita_toksent",
-                "eu.fbk.dh.tint.tokenizer.annotators.ItalianTokenizerAnnotator");
 
         properties.setProperty("udpipe.server", "gardner");
-        properties.setProperty("udpipe.port", "50020");
+        properties.setProperty("udpipe.port", "50021");
         properties.setProperty("udpipe.keepOriginal", "1");
+        properties.setProperty("udpipe.alreadyTokenized", "0");
 
 //        properties.setProperty("udpipe.model", "/Users/alessio/Desktop/model");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(properties);
 
-        Annotation annotation = new Annotation("Mi trovo nella casa dove sono nato. O forse non sono mai nato.");
+        String text = "Donald Trump can't set off a fierce new controversy Tuesday with remarks about the right to bear arms that were interpreted by many as a threat of violence against Hillary Clinton.";
+        Annotation annotation = new Annotation(text);
         pipeline.annotate(annotation);
         for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
             SemanticGraph graph = sentence.get(SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
