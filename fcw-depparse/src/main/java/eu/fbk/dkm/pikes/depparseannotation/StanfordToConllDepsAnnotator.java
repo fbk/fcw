@@ -25,29 +25,43 @@ public class StanfordToConllDepsAnnotator implements Annotator {
     @Override
     public void annotate(Annotation annotation) {
         if (annotation.containsKey(CoreAnnotations.SentencesAnnotation.class)) {
-//            int sentOffset = 0;
+
+            int sentOffset = 0;
+            boolean useOffset = false;
+
             for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
+                List<CoreLabel> tokens = sentence.get(CoreAnnotations.TokensAnnotation.class);
                 SemanticGraph dependencies = sentence.get(
                         SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class);
-                DepParseInfo info = new DepParseInfo(dependencies);
-                List<CoreLabel> tokens = sentence.get(CoreAnnotations.TokensAnnotation.class);
                 if (dependencies != null) {
+                    DepParseInfo info = new DepParseInfo(dependencies);
+                    Set<Integer> ints = info.getDepLabels().keySet();
+                    if (!useOffset && Collections.min(ints) != 1) {
+                        useOffset = true;
+                    }
+
                     for (int i = 0; i < tokens.size(); i++) {
                         CoreLabel token = tokens.get(i);
-//                        int j = i + sentOffset;
                         int j = i;
+                        if (useOffset) {
+                            j += sentOffset;
+                        }
 
                         String label = info.getDepLabels().get(j + 1);
-//                        int head = info.getDepParents().get(j + 1) - 1 - sentOffset;
                         int head = info.getDepParents().get(j + 1) - 1;
+                        if (useOffset) {
+                            head -= sentOffset;
+                        }
                         if (head < -1) {
                             head = -1;
                         }
+
                         token.set(CoreAnnotations.CoNLLDepTypeAnnotation.class, label);
                         token.set(CoreAnnotations.CoNLLDepParentIndexAnnotation.class, head);
                     }
+
                 }
-//                sentOffset += tokens.size();
+                sentOffset += tokens.size();
             }
         } else {
             throw new RuntimeException("unable to find words/tokens in: " + annotation);
@@ -58,7 +72,8 @@ public class StanfordToConllDepsAnnotator implements Annotator {
      * Returns a set of requirements for which tasks this annotator can
      * provide.  For example, the POS annotator will return "pos".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
         return Collections.singleton(DepparseAnnotations.MstParserAnnotation.class);
     }
 
@@ -67,7 +82,8 @@ public class StanfordToConllDepsAnnotator implements Annotator {
      * to perform.  For example, the POS annotator will return
      * "tokenize", "ssplit".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requires() {
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requires() {
         return Collections.unmodifiableSet(new ArraySet<>(Arrays.asList(
                 CoreAnnotations.TextAnnotation.class,
                 CoreAnnotations.TokensAnnotation.class,
