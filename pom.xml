@@ -50,6 +50,7 @@
         <module>fcw-mst-api</module>
         <module>fcw-wikipedia</module>
         <module>fcw-pos</module>
+        <module>fcw-semafor-translate</module>
         <module>fcw-stemmer</module>
     </modules>
 
