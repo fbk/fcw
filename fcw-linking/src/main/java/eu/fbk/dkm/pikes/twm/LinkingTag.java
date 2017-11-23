@@ -122,7 +122,7 @@ public class LinkingTag implements Serializable {
 
     @Override
     public String toString() {
-        return "DBpediaSpotlightTag{" +
+        return "LinkingTag{" +
                 "offset=" + offset +
                 ", page='" + page + '\'' +
                 ", score=" + score +

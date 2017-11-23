@@ -107,12 +107,16 @@ public class MachineLinking extends Linking {
 
                         Integer start = (Integer) span.get("start");
                         Integer end = (Integer) span.get("end");
+                        Double rel = Double.parseDouble(keyword.get("rel").toString());
+                        if (rel.isNaN()) {
+                            rel = 0d;
+                        }
 
                         LinkingTag tag = new LinkingTag(
                                 start,
                                 String.format("http://" + language + "dbpedia.org/resource/%s",
                                         (String) sense.get("page")),
-                                Double.parseDouble(keyword.get("rel").toString()),
+                                rel,
                                 originalText,
                                 end - start,
                                 LABEL
