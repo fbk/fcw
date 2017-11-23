@@ -29,14 +29,17 @@ public class SemaforAnnotator implements Annotator {
 
     private Semafor parser;
     int maxLen;
+    boolean useConll;
 
     public static final int MAXLEN = 200;
     public static final String MODEL_FOLDER = "models" + File.separator;
     public static final String SEMAFOR_MODEL_DIR = MODEL_FOLDER + "semafor" + File.separator;
+    public static final Boolean USE_CONLL = false;
 
     public SemaforAnnotator(String annotatorName, Properties props) {
         String semaforModelDir = props.getProperty(annotatorName + ".model_dir", SEMAFOR_MODEL_DIR);
-        maxLen = PropertiesUtils.getInteger(props.getProperty(annotatorName + ".model_dir"), MAXLEN);
+        useConll = PropertiesUtils.getBoolean(props.getProperty(annotatorName + ".use_conll"), USE_CONLL);
+        maxLen = PropertiesUtils.getInteger(props.getProperty(annotatorName + ".max_len"), MAXLEN);
         parser = SemaforModel.getInstance(semaforModelDir).getParser();
     }
 
@@ -54,7 +57,7 @@ public class SemaforAnnotator implements Annotator {
                 List<Token> sentenceTokens = new ArrayList<>();
 
                 DepParseInfo depParseInfo = stanfordSentence.get(DepparseAnnotations.MstParserAnnotation.class);
-                if (depParseInfo == null) {
+                if (depParseInfo == null && !useConll) {
                     LOGGER.warn("depParseInfo is null");
                     continue;
                 }
@@ -65,8 +68,16 @@ public class SemaforAnnotator implements Annotator {
                     String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                     String lemma = token.get(CoreAnnotations.LemmaAnnotation.class);
 
-                    Integer head = depParseInfo.getDepParents().get(i + 1);
-                    String rel = depParseInfo.getDepLabels().get(i + 1);
+                    Integer head;
+                    String rel;
+                    if (useConll) {
+                        rel = token.get(CoreAnnotations.CoNLLDepTypeAnnotation.class);
+                        head = token.get(CoreAnnotations.CoNLLDepParentIndexAnnotation.class) + 1;
+                    }
+                    else {
+                        rel = depParseInfo.getDepLabels().get(i + 1);
+                        head = depParseInfo.getDepParents().get(i + 1);
+                    }
 
                     Token fnToken = new Token(form, pos, head, rel);
                     fnToken.setLemma(lemma);
@@ -92,7 +103,8 @@ public class SemaforAnnotator implements Annotator {
      * Returns a set of requirements for which tasks this annotator can
      * provide.  For example, the POS annotator will return "pos".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
         return Collections.singleton(SemaforAnnotations.SemaforAnnotation.class);
     }
 
@@ -101,8 +113,9 @@ public class SemaforAnnotator implements Annotator {
      * to perform.  For example, the POS annotator will return
      * "tokenize", "ssplit".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requires() {
-        return Collections.singleton(DepparseAnnotations.MstParserAnnotation.class);
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requires() {
+        return Collections.emptySet();
     }
 
 //    @Override

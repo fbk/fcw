@@ -11,13 +11,6 @@
 
     <artifactId>fcw-semafor</artifactId>
 
-    <repositories>
-        <repository>
-            <id>fbk-repo</id>
-            <url>https://raw.githubusercontent.com/fbk/mvn-repo/master/releases</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -49,6 +42,11 @@
         <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-core</artifactId>
+            <version>${utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.fbk.utils</groupId>
+            <artifactId>utils-gson</artifactId>
             <version>${utils.version}</version>
         </dependency>
     </dependencies>
