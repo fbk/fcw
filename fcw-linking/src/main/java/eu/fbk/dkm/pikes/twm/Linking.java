@@ -64,8 +64,12 @@ public abstract class Linking {
 
         boolean useProxy = config.getProperty("use_proxy", "0").equals("1");
 
-        HttpURLConnection connection;
+        LOGGER.debug("Send POST request");
 
+        StringBuilder sb = new StringBuilder();
+
+        HttpURLConnection connection;
+        
         if (useProxy) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.getProperty("proxy_url", ""),
                     Integer.parseInt(config.getProperty("proxy_port", "0"))));
@@ -73,10 +77,6 @@ public abstract class Linking {
         } else {
             connection = (HttpURLConnection) serverAddress.openConnection();
         }
-
-        LOGGER.debug("Send POST request");
-
-        StringBuilder sb = new StringBuilder();
 
         try {
             connection.setRequestMethod("POST");
@@ -88,14 +88,18 @@ public abstract class Linking {
             connection.connect();
 
             // read the result from the server
-            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            while ((fromServer = rd.readLine()) != null) {
-                sb.append(fromServer + '\n');
+            try (BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                while ((fromServer = rd.readLine()) != null) {
+                    sb.append(fromServer + '\n');
+                }
             }
 
         } catch (Throwable e) {
             LOGGER.error("Linking error: {}", e.getMessage());
+        } finally {
+            connection.disconnect();
         }
+        
         LOGGER.debug("Request ended");
 
         return sb.toString();

@@ -116,13 +116,14 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
                 String neTag = output.get(i).get(CoreAnnotations.NamedEntityTagAnnotation.class);
                 String normNeTag = output.get(i).get(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class);
                 tokens.get(i).setNER(neTag);
-                if (normNeTag != null) tokens.get(i).set(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class, normNeTag);
+                if (normNeTag != null)
+                    tokens.get(i).set(CoreAnnotations.NormalizedNamedEntityTagAnnotation.class, normNeTag);
                 NumberSequenceClassifier.transferAnnotations(output.get(i), tokens.get(i));
             }
 
             //retrieve the spanning produced by the standard version of NER CoreNLP
-            final Map<Span, Counter<String>> entitiesStandard =  Maps.newHashMap();
-            extractEntitiesFromSingleLabelling(entitiesStandard,output,1.0); //fake 1.0 prob
+            final Map<Span, Counter<String>> entitiesStandard = Maps.newHashMap();
+            extractEntitiesFromSingleLabelling(entitiesStandard, output, 1.0); //fake 1.0 prob
 
             //printing the spans
             if (LOGGER.isDebugEnabled()) {
@@ -226,7 +227,8 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
      * Returns a set of requirements for which tasks this annotator can
      * provide.  For example, the POS annotator will return "pos".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
         return Collections.singleton(CoreAnnotations.NamedEntityTagAnnotation.class);
     }
 
@@ -235,7 +237,8 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
      * to perform.  For example, the POS annotator will return
      * "tokenize", "ssplit".
      */
-    @Override public Set<Class<? extends CoreAnnotation>> requires() {
+    @Override
+    public Set<Class<? extends CoreAnnotation>> requires() {
         return Collections.unmodifiableSet(new ArraySet<>(Arrays.asList(
                 CoreAnnotations.TextAnnotation.class,
                 CoreAnnotations.TokensAnnotation.class,
@@ -253,16 +256,13 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
     public static class ScoredNamedEntityTagsAnnotation
             implements CoreAnnotation<Counter<String>> {
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
         public Class<Counter<String>> getType() {
             return (Class) Counter.class;
         }
 
     }
-
-
-
 
 
     private static Map<Span, Counter<String>> extractEntities(
@@ -299,7 +299,6 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
     }
 
 
-
     private static void filterEntitiesWithStandardNER(final Map<Span, Counter<String>> entities,
                                                       final Map<Span, Counter<String>> entitiesStandard,
                                                       final double minSpanConfidence, boolean normalize) {
@@ -318,23 +317,21 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
             final Span span = entry.getKey();
             final Counter<String> tags = entry.getValue();
             final double confidence = Counters.L1Norm(tags);
-            if (!entitiesStandard.containsKey(span)||(confidence <= minSpanConfidence)) {
+            if (!entitiesStandard.containsKey(span) || (confidence <= minSpanConfidence)) {
                 entities.remove(span);
             } else if (normalize) {
-                for (String tag:tags.keySet()
-                     ) {
-                    tags.setCount(tag,tags.getCount(tag)/confidence);
+                for (String tag : tags.keySet()
+                        ) {
+                    tags.setCount(tag, tags.getCount(tag) / confidence);
                 }
-                entities.put(span,tags);
+                entities.put(span, tags);
             }
         }
     }
 
 
-
-
     private static void filterEntities(final Map<Span, Counter<String>> entities,
-            final double minSpanConfidence) {
+                                       final double minSpanConfidence) {
 
         // Do nothing if there are no entities
         if (entities.isEmpty()) {
@@ -362,7 +359,8 @@ public class NERConfidenceAnnotator extends SentenceAnnotator {
         // tokens of previously scanned spans (this strategy resolves overlaps by always taking
         // the most probable span)
         final boolean[] taggedTokens = new boolean[maxIndex];
-        outer: for (final Span span : Counters.toSortedList(spans)) {
+        outer:
+        for (final Span span : Counters.toSortedList(spans)) {
             for (int index = span.begin; index < span.end; ++index) {
                 if (taggedTokens[index]) {
                     entities.remove(span);
