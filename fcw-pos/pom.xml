@@ -15,11 +15,12 @@
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
+            <version>${corenlp-version}</version>
         </dependency>
         <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-corenlp</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <version>${utils.version}</version>
         </dependency>
     </dependencies>
 </project>

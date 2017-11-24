@@ -22,11 +22,21 @@
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
+            <version>${corenlp-version}</version>
         </dependency>
         <dependency>
             <groupId>eu.fbk.utils</groupId>
             <artifactId>utils-corenlp</artifactId>
             <version>${utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.fbk.utils</groupId>
+            <artifactId>utils-gson</artifactId>
+            <version>${utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 </project>
