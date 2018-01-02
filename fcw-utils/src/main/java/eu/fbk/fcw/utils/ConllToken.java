@@ -1,6 +1,7 @@
 package eu.fbk.fcw.utils;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.collect.TreeMultimap;
 import edu.stanford.nlp.util.Pair;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ConllToken {
     String lemma = null;
     String upos = null;
     String xpos = null;
-    HashMultimap<String, String> feats = null;
+    SortedSetMultimap<String, String> feats = null;
     String[] originalParts;
 
     Integer head = null;
@@ -39,6 +40,24 @@ public class ConllToken {
 
     public String[] getOriginalParts() {
         return originalParts;
+    }
+
+    public static SortedSetMultimap<String, String> featureStringToAnnotation(String featureString) {
+        SortedSetMultimap<String, String> featsMap = TreeMultimap.create();
+        if (featureString != null) {
+            String[] feats = featureString.split("\\|");
+            for (String feat : feats) {
+                String[] featParts = feat.split("=");
+                if (featParts.length >= 2) {
+                    String[] values = featParts[1].split(",");
+                    for (String value : values) {
+                        value = value.trim();
+                        featsMap.put(featParts[0], value);
+                    }
+                }
+            }
+        }
+        return featsMap;
     }
 
     public ConllToken(String conllLine, int offset) throws Exception {
@@ -78,19 +97,7 @@ public class ConllToken {
         }
 
         if (!parts[5].equals("_")) {
-            String[] feats = parts[5].split("\\|");
-            HashMultimap<String, String> featsMap = HashMultimap.create();
-            for (String feat : feats) {
-                String[] featParts = feat.split("=");
-                if (featParts.length >= 2) {
-                    String[] values = featParts[1].split(",");
-                    for (String value : values) {
-                        value = value.trim();
-                        featsMap.put(featParts[0], value);
-                    }
-                }
-            }
-            setFeats(featsMap);
+            setFeats(featureStringToAnnotation(parts[5]));
         }
 
         if (!parts[6].equals("_")) {
@@ -126,7 +133,8 @@ public class ConllToken {
         }
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Token{" +
                 "id='" + id + '\'' +
                 ", form='" + form + '\'' +
@@ -185,7 +193,7 @@ public class ConllToken {
         return feats != null ? feats.asMap() : null;
     }
 
-    public void setFeats(HashMultimap<String, String> feats) {
+    public void setFeats(SortedSetMultimap<String, String> feats) {
         this.feats = feats;
     }
 

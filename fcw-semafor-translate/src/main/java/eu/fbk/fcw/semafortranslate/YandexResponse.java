@@ -18,4 +18,8 @@ public class YandexResponse {
                 ", text=" + text +
                 '}';
     }
+
+    public List<String> getText() {
+        return text;
+    }
 }
