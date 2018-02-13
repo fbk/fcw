@@ -29,4 +29,13 @@ public class DeeplResponse {
     public Integer id;
     public String jsonrpc;
     public Result result;
+
+    @Override
+    public String toString() {
+        return "DeeplResponse{" +
+                "id=" + id +
+                ", jsonrpc='" + jsonrpc + '\'' +
+                ", result=" + result +
+                '}';
+    }
 }

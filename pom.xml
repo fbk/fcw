@@ -56,7 +56,7 @@
 
     <properties>
         <fcw.version>${project.version}</fcw.version>
-        <utils.version>3.1</utils.version>
+        <utils.version>3.2-SNAPSHOT</utils.version>
         <corenlp-version>3.8.0</corenlp-version>
         <parent-path>.</parent-path>
     </properties>

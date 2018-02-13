@@ -13,6 +13,7 @@ import edu.stanford.nlp.util.CoreMap;
 import eu.fbk.fcw.semafor.SemaforAnnotations;
 import eu.fbk.utils.core.Network;
 import eu.fbk.utils.core.PropertiesUtils;
+import eu.fbk.utils.corenlp.outputters.JSONOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,9 @@ public class SemaforTranslateAnnotator implements Annotator {
     private static String DEFAULT_DEEPL_URL = "https://www.deepl.com/jsonrpc";
 
     private static String DEFAULT_TRANSLATION_ENGINE = "yandex";
+
+    private static Boolean DEFAULT_INCLUDE_ORIGINAL = false;
+
     private SemaforTranslateModel model;
 
     private String yandexKey;
@@ -44,6 +48,7 @@ public class SemaforTranslateAnnotator implements Annotator {
     private String deeplUrl;
 
     private String engine;
+    private Boolean includeOriginal;
 
     public SemaforTranslateAnnotator(String annotatorName, Properties props) {
         Properties annotatorProperties = PropertiesUtils.dotConvertedProperties(props, annotatorName);
@@ -60,6 +65,8 @@ public class SemaforTranslateAnnotator implements Annotator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        includeOriginal = PropertiesUtils.getBoolean(annotatorProperties.getProperty("includeOriginal"), DEFAULT_INCLUDE_ORIGINAL);
     }
 
     @Override
@@ -106,9 +113,9 @@ public class SemaforTranslateAnnotator implements Annotator {
                     String json = new Gson().toJson(deeplRequest);
                     response = Network.postRequest(deeplUrl, json);
                     DeeplResponse deeplResponse = new Gson().fromJson(response, DeeplResponse.class);
-                    stanfordText = deeplResponse.result.translations.get(0).beams.get(0).postprocessed_sentence;
-//                    System.out.println(stanfordText);
-//                    System.exit(1);
+                    if (deeplResponse.result != null) {
+                        stanfordText = deeplResponse.result.translations.get(0).beams.get(0).postprocessed_sentence;
+                    }
                     break;
             }
 
@@ -122,8 +129,10 @@ public class SemaforTranslateAnnotator implements Annotator {
             StanfordCoreNLP pipeline = new StanfordCoreNLP(model.getStanfordProperties());
             pipeline.annotate(stanfordAnnotation);
 
-//            String out = JSONOutputter.jsonPrint(stanfordAnnotation);
-//            System.out.println(out);
+            if (includeOriginal) {
+//                String out = JSONOutputter.jsonPrint(stanfordAnnotation);
+                annotation.set(SemaforTranslateAnnotations.SemaforOriginalAnnotation.class, stanfordAnnotation);
+            }
 
             TreeMultimap<Integer, Integer> finalAlignments = TreeMultimap.create();
 
@@ -272,12 +281,13 @@ public class SemaforTranslateAnnotator implements Annotator {
                             continue;
                         }
                         Integer sentenceIndex = origSentences.stream().findFirst().get();
+                        Integer dOffset = annotation.get(CoreAnnotations.SentencesAnnotation.class).get(sentenceIndex).get(CoreAnnotations.TokenBeginAnnotation.class);
 
                         if (origTokens.size() == 0) {
                             continue;
                         }
 
-                        SemaforParseResult.Frame.NamedSpanSet targetNamedSpanSet = getSpanSet(origTokens, annotation, offset, frame.target.name);
+                        SemaforParseResult.Frame.NamedSpanSet targetNamedSpanSet = getSpanSet(origTokens, annotation, dOffset, frame.target.name);
 
                         List<SemaforParseResult.Frame.ScoredRoleAssignment> annotationSets = new ArrayList<>();
                         List<SemaforParseResult.Frame.NamedSpanSet> namedSpanSets = new ArrayList<>();

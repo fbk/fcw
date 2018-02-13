@@ -1,6 +1,7 @@
 package eu.fbk.fcw.semafortranslate;
 
 import edu.stanford.nlp.ling.CoreAnnotation;
+import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.util.ErasureUtils;
 import eu.fbk.utils.gson.JSONLabel;
 
@@ -18,6 +19,15 @@ public class SemaforTranslateAnnotations {
         @Override
         public Class<String> getType() {
             return String.class;
+        }
+    }
+
+    @JSONLabel("originalAnnotation")
+    public static class SemaforOriginalAnnotation implements CoreAnnotation<Annotation> {
+
+        @Override
+        public Class<Annotation> getType() {
+            return Annotation.class;
         }
     }
 
