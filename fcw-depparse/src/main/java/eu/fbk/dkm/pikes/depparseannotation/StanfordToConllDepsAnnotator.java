@@ -74,7 +74,10 @@ public class StanfordToConllDepsAnnotator implements Annotator {
      */
     @Override
     public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
-        return Collections.singleton(DepparseAnnotations.MstParserAnnotation.class);
+        return Collections.unmodifiableSet(new ArraySet<>(Arrays.asList(
+                CoreAnnotations.CoNLLDepTypeAnnotation.class,
+                CoreAnnotations.CoNLLDepParentIndexAnnotation.class
+        )));
     }
 
     /**
@@ -85,15 +88,8 @@ public class StanfordToConllDepsAnnotator implements Annotator {
     @Override
     public Set<Class<? extends CoreAnnotation>> requires() {
         return Collections.unmodifiableSet(new ArraySet<>(Arrays.asList(
-                CoreAnnotations.TextAnnotation.class,
-                CoreAnnotations.TokensAnnotation.class,
-                CoreAnnotations.CharacterOffsetBeginAnnotation.class,
-                CoreAnnotations.CharacterOffsetEndAnnotation.class,
-                CoreAnnotations.IndexAnnotation.class,
-                CoreAnnotations.ValueAnnotation.class,
                 CoreAnnotations.SentencesAnnotation.class,
-                CoreAnnotations.SentenceIndexAnnotation.class,
-                CoreAnnotations.PartOfSpeechAnnotation.class,
+                CoreAnnotations.TokensAnnotation.class,
                 SemanticGraphCoreAnnotations.BasicDependenciesAnnotation.class
         )));
     }
