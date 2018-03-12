@@ -77,8 +77,8 @@ public class CoNLLUDocumentReader implements
 
             List<String> comments = new LinkedList<>();
 
-      /* Increase the line number in case there are comments before the actual sentence
-       * and add them to the list of comments. */
+            /* Increase the line number in case there are comments before the actual sentence
+             * and add them to the list of comments. */
             wordList.stream().filter(w -> w.tag() != null && w.tag().equals(COMMENT_POS))
                     .forEach(w -> {
                         lineNumberCounter++;
@@ -94,7 +94,7 @@ public class CoNLLUDocumentReader implements
                     .filter(w -> !w.containsKey(CoreAnnotations.CoNLLUTokenSpanAnnotation.class))
                     .forEach(w -> sortedTokens.add(w));
 
-      /* Construct a semantic graph. */
+            /* Construct a semantic graph. */
             List<TypedDependency> deps = new ArrayList<>(sorted.size());
 
             IntPair tokenSpan = null;
@@ -106,7 +106,7 @@ public class CoNLLUDocumentReader implements
                     tokenSpan = word.get(CoreAnnotations.CoNLLUTokenSpanAnnotation.class);
                     originalToken = word.word();
                 } else {
-          /* Deal with multiword tokens. */
+                    /* Deal with multiword tokens. */
                     if (tokenSpan != null && tokenSpan.getTarget() >= word.index()) {
                         word.setOriginalText(originalToken);
                         word.set(CoreAnnotations.CoNLLUTokenSpanAnnotation.class, tokenSpan);
@@ -131,15 +131,16 @@ public class CoNLLUDocumentReader implements
                     word.set(CoreAnnotations.LineNumberAnnotation.class, lineNumberCounter);
                     deps.add(dep);
 
-                    HashMap<Integer, String> extraDeps = word.get(CoreAnnotations.CoNLLUSecondaryDepsAnnotation.class);
-                    for (Integer extraGovIdx : extraDeps.keySet()) {
-                        GrammaticalRelation extraReln =
-                                GrammaticalRelation.valueOf(Language.UniversalEnglish, extraDeps.get(extraGovIdx));
-                        IndexedWord extraGov = sortedTokens.get(extraGovIdx - 1);
-                        TypedDependency extraDep = new TypedDependency(extraReln, extraGov, word);
-                        extraDep.setExtra();
-                        deps.add(extraDep);
-                    }
+                    //todo: test with CoreNLP 3.9.1
+//                    HashMap<Integer, String> extraDeps = word.get(CoreAnnotations.CoNLLUSecondaryDepsAnnotation.class);
+//                    for (Integer extraGovIdx : extraDeps.keySet()) {
+//                        GrammaticalRelation extraReln =
+//                                GrammaticalRelation.valueOf(Language.UniversalEnglish, extraDeps.get(extraGovIdx));
+//                        IndexedWord extraGov = sortedTokens.get(extraGovIdx - 1);
+//                        TypedDependency extraDep = new TypedDependency(extraReln, extraGov, word);
+//                        extraDep.setExtra();
+//                        deps.add(extraDep);
+//                    }
                 }
             }
             lineNumberCounter++;
@@ -167,7 +168,7 @@ public class CoNLLUDocumentReader implements
 
             word.set(CoreAnnotations.TextAnnotation.class, bits[1]);
 
-      /* Check if it is a multiword token. */
+            /* Check if it is a multiword token. */
             if (bits[0].contains("-")) {
                 String[] span = bits[0].split("-");
                 Integer start = Integer.parseInt(span[0]);
@@ -187,13 +188,14 @@ public class CoNLLUDocumentReader implements
                 word.setIndex(Integer.parseInt(bits[0]));
                 word.setValue(bits[1]);
 
-        /* Parse features. */
+                /* Parse features. */
                 HashMap<String, String> features = CoNLLUUtils.parseFeatures(bits[5]);
                 word.set(CoreAnnotations.CoNLLUFeats.class, features);
 
-        /* Parse extra dependencies. */
-                HashMap<Integer, String> extraDeps = CoNLLUUtils.parseExtraDeps(bits[8]);
-                word.set(CoreAnnotations.CoNLLUSecondaryDepsAnnotation.class, extraDeps);
+                /* Parse extra dependencies. */
+                //todo: test with CoreNLP 3.9.1
+//                HashMap<Integer, String> extraDeps = CoNLLUUtils.parseExtraDeps(bits[8]);
+//                word.set(CoreAnnotations.CoNLLUSecondaryDepsAnnotation.class, extraDeps);
             }
 
             return word;
