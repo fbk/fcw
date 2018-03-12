@@ -13,7 +13,6 @@ import edu.stanford.nlp.util.CoreMap;
 import eu.fbk.fcw.semafor.SemaforAnnotations;
 import eu.fbk.utils.core.Network;
 import eu.fbk.utils.core.PropertiesUtils;
-import eu.fbk.utils.corenlp.outputters.JSONOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
