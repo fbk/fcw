@@ -46,24 +46,26 @@ public class DBpediaSpotlightCandidates extends Linking {
         if (annotation != null) {
             ArrayList<LinkedHashMap> surfaceForms = new ArrayList<>();
             Object surfaceFormJson = annotation.get(new String("surfaceForm"));
-            if (surfaceFormJson instanceof ArrayList) {
-                surfaceForms = (ArrayList) surfaceFormJson;
-            } else {
-                surfaceForms.add((LinkedHashMap) surfaceFormJson);
-            }
-            for (LinkedHashMap keyword : surfaceForms) {
-                Object res = keyword.get("resource");
-                if (res instanceof ArrayList) {
-                    ArrayList resources = (ArrayList) res;
-                    for (Object resourceObj : resources) {
-                        LinkedHashMap resource = (LinkedHashMap) resourceObj;
+            if (surfaceFormJson != null) {
+                if (surfaceFormJson instanceof ArrayList) {
+                    surfaceForms = (ArrayList) surfaceFormJson;
+                } else {
+                    surfaceForms.add((LinkedHashMap) surfaceFormJson);
+                }
+                for (LinkedHashMap keyword : surfaceForms) {
+                    Object res = keyword.get("resource");
+                    if (res instanceof ArrayList) {
+                        ArrayList resources = (ArrayList) res;
+                        for (Object resourceObj : resources) {
+                            LinkedHashMap resource = (LinkedHashMap) resourceObj;
+                            LinkingTag tag = tagFromResource(resource, keyword);
+                            ret.add(tag);
+                        }
+                    } else {
+                        LinkedHashMap resource = (LinkedHashMap) res;
                         LinkingTag tag = tagFromResource(resource, keyword);
                         ret.add(tag);
                     }
-                } else {
-                    LinkedHashMap resource = (LinkedHashMap) res;
-                    LinkingTag tag = tagFromResource(resource, keyword);
-                    ret.add(tag);
                 }
             }
         }
