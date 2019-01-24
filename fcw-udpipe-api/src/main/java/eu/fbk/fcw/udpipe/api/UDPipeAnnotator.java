@@ -144,6 +144,7 @@ public class UDPipeAnnotator implements Annotator {
 
             for (List<ConllToken> sentence : text) {
                 List<CoreLabel> clSentence = new ArrayList<>();
+                int tokenIndex = 0;
                 for (ConllToken token : sentence) {
 
                     if (!alreadyTokenized) {
@@ -161,6 +162,7 @@ public class UDPipeAnnotator implements Annotator {
                         }
 
                         CoreLabel clToken = factory.makeToken(token.getForm(), token.getForm(), start, end - start);
+                        clToken.setIndex(++tokenIndex);
                         clSentence.add(clToken);
                     }
 
