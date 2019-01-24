@@ -52,6 +52,7 @@
         <module>fcw-pos</module>
         <module>fcw-semafor-translate</module>
         <module>fcw-stemmer</module>
+        <module>fcw-herodotos</module>
     </modules>
 
     <properties>
