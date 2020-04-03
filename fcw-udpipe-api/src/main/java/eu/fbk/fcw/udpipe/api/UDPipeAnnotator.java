@@ -88,6 +88,10 @@ public class UDPipeAnnotator implements Annotator {
 
         try {
             String response = Network.request(url.toString(), data);
+
+            // TODO Verify the max size of the input (1MB)
+            // https://github.com/ufal/udpipe/issues/68
+
             Gson gson = new Gson();
             UDPipe udPipe = gson.fromJson(response, UDPipe.class);
 
@@ -149,6 +153,9 @@ public class UDPipeAnnotator implements Annotator {
 
                     if (!alreadyTokenized) {
                         String misc = token.getMisc();
+                        if (misc == null) {
+                            continue;
+                        }
                         Matcher m = tokenRangePattern.matcher(misc);
                         Integer start = null;
                         Integer end = null;
@@ -166,13 +173,21 @@ public class UDPipeAnnotator implements Annotator {
                         clSentence.add(clToken);
                     }
 
+                    String head = null;
+                    try {
+                        head = token.getHead().toString();
+                    }
+                    catch (Exception e) {
+                        // ignored
+                    }
+
                     res.append(token.getId()).append("\t");
                     res.append(token.getOriginalParts()[1]).append("\t");
                     res.append(token.getOriginalParts()[2]).append("\t");
                     res.append(token.getOriginalParts()[3]).append("\t");
                     res.append(token.getOriginalParts()[4]).append("\t");
                     res.append(token.getOriginalParts()[5]).append("\t");
-                    res.append(nn(token.getHead().toString())).append("\t");
+                    res.append(nn(head)).append("\t");
                     res.append(token.getOriginalParts()[7]).append("\t");
                     res.append("_").append("\t");
                     res.append(token.getOriginalParts()[9]).append("\n");
