@@ -22,6 +22,7 @@ public class TreeTaggerPosAnnotator implements Annotator {
 
 	private TreeTaggerWrapper tt;
 	protected ArrayList<String> poss;
+	protected ArrayList<String> lemmas;
 
 	public TreeTaggerPosAnnotator(String annotatorName, Properties props) throws IOException {
 		System.setProperty("treetagger.home", props.getProperty(annotatorName + ".home"));
@@ -35,6 +36,7 @@ public class TreeTaggerPosAnnotator implements Annotator {
 				pos = pos.replace("IN/that", "IN");
 
 				poss.add(pos);
+				lemmas.add(lemma);
 			}
 		});
 	}
@@ -48,6 +50,7 @@ public class TreeTaggerPosAnnotator implements Annotator {
 				synchronized (this) {
 					try {
 						poss = new ArrayList<>();
+						lemmas = new ArrayList<>();
 						ArrayList<String> stringTokens = new ArrayList<>();
 						for (int i = 0, sz = tokens.size(); i < sz; i++) {
 							stringTokens.add(tokens.get(i).originalText());
@@ -57,6 +60,7 @@ public class TreeTaggerPosAnnotator implements Annotator {
 							CoreLabel thisToken = tokens.get(i);
 							String pos = AnnotatorUtils.parenthesisToCode(poss.get(i));
 							thisToken.set(CoreAnnotations.PartOfSpeechAnnotation.class, pos);
+							thisToken.set(CoreAnnotations.LemmaAnnotation.class, lemmas.get(i));
 						}
 
 					} catch (Exception e) {
