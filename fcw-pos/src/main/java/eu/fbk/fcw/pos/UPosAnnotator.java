@@ -77,13 +77,18 @@ public class UPosAnnotator implements Annotator {
                 upos.append("+").append(thisPos);
             }
             token.set(CustomAnnotations.UPosAnnotation.class, upos.substring(1));
+            token.set(CoreAnnotations.CoarseTagAnnotation.class, upos.substring(1));
         }
 
     }
 
     @Override
     public Set<Class<? extends CoreAnnotation>> requirementsSatisfied() {
-        return Collections.singleton(CustomAnnotations.UPosAnnotation.class);
+//        return Collections.singleton(CustomAnnotations.UPosAnnotation.class);
+        return Collections.unmodifiableSet(new ArraySet<>(Arrays.asList(
+                CoreAnnotations.CoarseTagAnnotation.class,
+                CustomAnnotations.UPosAnnotation.class
+        )));
     }
 
     @Override
