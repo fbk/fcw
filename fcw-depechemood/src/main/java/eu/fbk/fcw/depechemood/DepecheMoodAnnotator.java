@@ -33,7 +33,7 @@ public class DepecheMoodAnnotator implements Annotator {
 
         // TODO: bad
         URL resource = Resources.getResource("DepecheMood_english_lemma_full.tsv");
-        if (lang == "it") {
+        if (lang.equals("it")) {
             resource = Resources.getResource("DepecheMood_italian_lemma_full.tsv");
         }
 
