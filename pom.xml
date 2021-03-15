@@ -53,7 +53,6 @@
         <module>fcw-semafor-translate</module>
         <module>fcw-stemmer</module>
         <module>fcw-herodotos</module>
-        <module>fcw-depechemood</module>
         <module>fcw-ppp</module>
     </modules>
 
