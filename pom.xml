@@ -7,7 +7,7 @@
     <groupId>eu.fbk.fcw</groupId>
     <artifactId>fcw</artifactId>
     <packaging>pom</packaging>
-    <version>0.2</version>
+    <version>3.3-SNAPSHOT</version>
 
     <inceptionYear>2017</inceptionYear>
     <description>A collection of Stanford CoreNLP wrappers</description>
