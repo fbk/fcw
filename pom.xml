@@ -7,7 +7,7 @@
     <groupId>eu.fbk.fcw</groupId>
     <artifactId>fcw</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
     <inceptionYear>2017</inceptionYear>
     <description>A collection of Stanford CoreNLP wrappers</description>
@@ -58,7 +58,7 @@
 
     <properties>
         <fcw.version>${project.version}</fcw.version>
-        <utils.version>3.1.2</utils.version>
+        <utils.version>3.2</utils.version>
         <corenlp-version>4.2.0</corenlp-version>
         <parent-path>.</parent-path>
     </properties>
@@ -87,11 +87,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
